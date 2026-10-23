@@ -1,0 +1,92 @@
+# GHSGuns config
+# Damage is in half-hearts (2.0 = one heart).
+
+# Players can never be killed by guns. Lethal hits leave them at this much health.
+min-health: 1.0
+
+# Troll extras
+troll:
+  # Launch players into the air when hit by an RPG or nuke blast
+  launch-players: true
+  # Firework confetti when a bullet hits a player
+  confetti-on-hit: true
+  # Broadcast a warning to the whole server when a nuke is fired
+  nuke-broadcast: true
+
+# Explosions break blocks when true
+explosions-break-blocks: true
+# Explosions set fire when true
+explosions-set-fire: false
+
+# /guns undo restores blocks broken by gun explosions.
+# History is kept in memory only, so it is cleared when the server restarts.
+undo:
+  max-history: 50
+
+# Run as console when a player gets launched, so your anticheat (VoidAC) doesn't flag them.
+# Use %player% for the player's name. Leave empty to disable.
+# Check VoidAC's docs for its exempt command, or give players a bypass permission instead.
+anticheat-exempt-command: ""
+
+# Optional custom item models from a resource pack (e.g. "ghsguns:pistol").
+# Leave empty to use the vanilla look until you have a resource pack.
+guns:
+  pistol:
+    name: "<gold>Pistol"
+    damage: 5.0
+    cooldown-ticks: 6
+    shots-per-trigger: 1
+    shot-interval-ticks: 1
+    spread: 0.01
+    range: 60
+    magazine: 12
+    reload-ticks: 30
+    item-model: ""
+  smg:
+    name: "<yellow>SMG"
+    damage: 2.5
+    cooldown-ticks: 4
+    shots-per-trigger: 3
+    shot-interval-ticks: 1
+    spread: 0.06
+    range: 40
+    magazine: 30
+    reload-ticks: 40
+    item-model: ""
+  ar:
+    name: "<green>Assault Rifle"
+    damage: 4.0
+    cooldown-ticks: 4
+    shots-per-trigger: 2
+    shot-interval-ticks: 2
+    spread: 0.025
+    range: 80
+    magazine: 25
+    reload-ticks: 45
+    item-model: ""
+  rpg:
+    name: "<red>RPG"
+    damage: 0
+    cooldown-ticks: 40
+    shots-per-trigger: 1
+    shot-interval-ticks: 1
+    spread: 0.0
+    range: 120
+    magazine: 1
+    reload-ticks: 60
+    explosion-power: 4.0
+    projectile-speed: 1.6
+    item-model: ""
+  nuke:
+    name: "<dark_red><bold>NUKE"
+    damage: 0
+    cooldown-ticks: 200
+    shots-per-trigger: 1
+    shot-interval-ticks: 1
+    spread: 0.0
+    range: 200
+    magazine: 1
+    reload-ticks: 200
+    explosion-power: 10.0
+    projectile-speed: 1.2
+    item-model: ""
