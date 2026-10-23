@@ -31,13 +31,22 @@ Right-click to shoot (hold it for automatic guns). Sneak + right-click to reload
 | Chicken Bomb | Throw it: 20 chickens burst out, then pop into feathers |
 | Totally Real TNT | Throw it: it hisses, "explodes" into confetti and does no damage |
 | Disco Ball | Throw it: a 10-second dance party with lights, music, glowing and forced dancing |
+| Shrink Ray | Shrinks a player to a quarter size for 30 seconds. **Sneak** to make them a 3x giant instead. |
+| Magnet | Yanks the player you're looking at over to you |
+| The Fish | Hit someone with it (or right-click up close) to slap them across the map |
+| Hot Potato | Gives someone the hot potato: they have 15 seconds to hit someone else to pass it, or it blows up on them (harmlessly) |
+| Jail Wand | Locks a player in a glass cage for 10 seconds |
+| Banana Peel | Throw it on the ground. The next player to walk over it slips, spins and goes flying. |
+| Web Shooter | Throw it to make a cobweb trap that disappears after 6 seconds |
 
 ## Commands (permission `ghsguns.admin`, op by default)
 - `/guns give <item|guns|trolls|all> [player]`
-- `/guns troll <player|all> <effect>`. Effects: `launch`, `anvil`, `chickens`, `freeze`, `levitate`, `disco`, `faketnt`, `fakeop` (fake "you are now op" message), `creeper` (hiss behind them), `spin`, `fakenuke` (siren and countdown, then "jk"), `fakeban` (kicks them with a fake ban message; they can rejoin), `demo` (shows the demo-mode screen)
+- `/guns troll <player|all> <effect>`. Effects: `launch`, `anvil`, `chickens`, `freeze`, `levitate`, `disco`, `faketnt`, `fakeop` (fake "you are now op" message), `creeper` (hiss behind them), `spin`, `fakenuke` (siren and countdown, then "jk"), `fakeban` (kicks them with a fake ban message; they can rejoin), `demo` (shows the demo-mode screen), `shrink`, `giant`, `cage`, `skydrop` (teleports them 120 blocks up; the fall can't kill), `potato`, `drunk` (wobbly walking and slurred chat for 30s), `uwu` (their chat turns uwu for 60s), `jumpscare`, `paranoia` (creepy sounds around them for 30s), `fakediamonds` (diamonds that vanish when they get close), `fakeleave` (fake "left the game" message), `fakedeath` (fake funny death message), `shuffle` (shuffles their hotbar; no items lost), `pigrain`, `webs`
 - `/guns undo`: put back blocks from the last explosion
 - `/guns undo <amount>` / `/guns undo all` / `/guns undo player <name>`
 - `/guns list`, `/guns reload`
+
+Blocks placed by trolls (cages, webs) only fill empty air. They remove themselves after a few seconds, never drop items, and are cleaned up if the server stops. Size changes are also cleared on restart or rejoin.
 
 Undo covers the whole nuke, ring explosions included, as one undo. History is kept in memory only (the last 50 explosions), so it clears on restart.
 

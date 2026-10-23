@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
 
 /** Troll items and the effects behind /guns troll. */
 public final class TrollListener implements Listener {
@@ -51,11 +52,13 @@ public final class TrollListener implements Listener {
     private final GHSGuns plugin;
     private final SafeDamage safe;
     private final NamespacedKey trollKey;
+    private final MoreTrolls more;
     private final Map<UUID, Integer> cooldowns = new HashMap<>();
 
-    public TrollListener(GHSGuns plugin, SafeDamage safe) {
+    public TrollListener(GHSGuns plugin, SafeDamage safe, MoreTrolls more) {
         this.plugin = plugin;
         this.safe = safe;
+        this.more = more;
         this.trollKey = new NamespacedKey(plugin, "troll_projectile");
     }
 
@@ -96,9 +99,13 @@ public final class TrollListener implements Listener {
             return;
         }
 
-        LivingEntity target = clicked != null ? clicked : lookTarget(player, 50);
+        LivingEntity target = clicked != null ? clicked : lookTarget(player, tool == TrollTool.FISH_SLAP ? 4 : 50);
         if (target == null) {
             player.sendActionBar(Component.text("No target! Aim at a player or mob.", NamedTextColor.RED));
+            return;
+        }
+        if ((tool == TrollTool.HOT_POTATO || tool == TrollTool.JAIL_WAND) && !(target instanceof Player)) {
+            player.sendActionBar(Component.text("That only works on players.", NamedTextColor.RED));
             return;
         }
         cooldowns.put(player.getUniqueId(), now + tool.cooldownTicks());
@@ -109,6 +116,11 @@ public final class TrollListener implements Listener {
             case FREEZE_RAY -> freeze(target);
             case LEVITATION_WAND -> levitate(target);
             case ANVIL_RAIN -> anvilRain(target);
+            case SHRINK_RAY -> more.resize(target, player.isSneaking() ? 3.0 : 0.25, 30);
+            case MAGNET -> more.magnet(player, target);
+            case FISH_SLAP -> more.fishSlap(player, target);
+            case HOT_POTATO -> more.givePotato((Player) target, true);
+            case JAIL_WAND -> more.cage((Player) target);
             default -> { }
         }
     }
@@ -143,6 +155,8 @@ public final class TrollListener implements Listener {
             case CHICKEN_BOMB -> chickenBomb(at);
             case FAKE_TNT -> fakeTnt(at);
             case DISCO_BALL -> disco(at);
+            case BANANA_PEEL -> more.bananaPeel(at);
+            case WEB_SHOOTER -> more.webs(at);
             default -> { }
         }
     }
@@ -418,9 +432,9 @@ public final class TrollListener implements Listener {
         target.showDemoScreen();
     }
 
-    public static final List<String> COMMAND_TROLLS = List.of(
+    public static final List<String> COMMAND_TROLLS = Stream.concat(Stream.of(
             "launch", "anvil", "chickens", "freeze", "levitate", "disco", "faketnt",
-            "fakeop", "creeper", "spin", "fakenuke", "fakeban", "demo");
+            "fakeop", "creeper", "spin", "fakenuke", "fakeban", "demo"), MoreTrolls.COMMAND_TROLLS.stream()).toList();
 
     /** Run a troll on a player from the command. Returns false if the troll name is unknown. */
     public boolean commandTroll(Player target, String name) {
@@ -439,7 +453,7 @@ public final class TrollListener implements Listener {
             case "fakeban" -> fakeBan(target);
             case "demo" -> demo(target);
             default -> {
-                return false;
+                return more.commandTroll(target, name);
             }
         }
         return true;

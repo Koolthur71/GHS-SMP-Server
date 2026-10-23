@@ -13,7 +13,14 @@ public enum TrollTool {
     ANVIL_RAIN("<gray>Anvil Rain", Material.ANVIL, false, 100, "Right-click a player to drop (harmless) anvils on them"),
     CHICKEN_BOMB("<yellow>Chicken Bomb", Material.EGG, true, 60, "Throw it for a chicken explosion"),
     FAKE_TNT("<red>Totally Real TNT", Material.TNT, true, 60, "Throw it. It's definitely real."),
-    DISCO_BALL("<gradient:red:yellow:green:aqua:light_purple>Disco Ball", Material.AMETHYST_CLUSTER, true, 200, "Throw it to start a dance party");
+    DISCO_BALL("<gradient:red:yellow:green:aqua:light_purple>Disco Ball", Material.AMETHYST_CLUSTER, true, 200, "Throw it to start a dance party"),
+    SHRINK_RAY("<light_purple>Shrink Ray", Material.AMETHYST_SHARD, false, 100, "Right-click a player to shrink them (sneak to make them a giant)"),
+    MAGNET("<red>Magnet", Material.IRON_INGOT, false, 60, "Right-click a player to yank them over to you"),
+    FISH_SLAP("<aqua>The Fish", Material.COD, false, 15, "Hit someone with it. Trust me."),
+    HOT_POTATO("<gold>Hot Potato", Material.BAKED_POTATO, false, 200, "Right-click a player to give them the hot potato"),
+    JAIL_WAND("<gray>Jail Wand", Material.IRON_BARS, false, 200, "Right-click a player to lock them in a glass cage for 10 seconds"),
+    BANANA_PEEL("<yellow>Banana Peel", Material.YELLOW_DYE, true, 40, "Throw it on the ground and wait for someone to slip"),
+    WEB_SHOOTER("<white>Web Shooter", Material.COBWEB, true, 60, "Throw it to make a web trap (disappears after 6 seconds)");
 
     private final String name;
     private final Material material;

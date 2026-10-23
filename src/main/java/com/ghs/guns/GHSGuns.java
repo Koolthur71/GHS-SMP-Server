@@ -31,6 +31,8 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
     private NamespacedKey trollKey;
     private UndoManager undo;
     private TrollListener trolls;
+    private TempBlocks tempBlocks;
+    private MoreTrolls moreTrolls;
 
     @Override
     public void onEnable() {
@@ -42,8 +44,12 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
         saveDefaultConfig();
         loadStats();
         SafeDamage safe = new SafeDamage(this);
-        trolls = new TrollListener(this, safe);
+        tempBlocks = new TempBlocks(this);
+        moreTrolls = new MoreTrolls(this, safe, tempBlocks);
+        trolls = new TrollListener(this, safe, moreTrolls);
         getServer().getPluginManager().registerEvents(safe, this);
+        getServer().getPluginManager().registerEvents(tempBlocks, this);
+        getServer().getPluginManager().registerEvents(moreTrolls, this);
         getServer().getPluginManager().registerEvents(new GunListener(this, safe), this);
         getServer().getPluginManager().registerEvents(trolls, this);
         var cmd = getCommand("guns");
@@ -51,6 +57,12 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
             cmd.setExecutor(this);
             cmd.setTabCompleter(this);
         }
+    }
+
+    @Override
+    public void onDisable() {
+        if (tempBlocks != null) tempBlocks.revertAll();
+        if (moreTrolls != null) moreTrolls.cleanup();
     }
 
     public void loadStats() {
@@ -174,6 +186,10 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
             case "troll" -> {
                 if (args.length < 3) {
                     sender.sendMessage(Component.text("Usage: /guns troll <player|all> <" + String.join("|", TrollListener.COMMAND_TROLLS) + ">", NamedTextColor.RED));
+                    return true;
+                }
+                if (!TrollListener.COMMAND_TROLLS.contains(args[2].toLowerCase())) {
+                    sender.sendMessage(Component.text("Unknown troll: " + args[2], NamedTextColor.RED));
                     return true;
                 }
                 List<Player> targets = new ArrayList<>();
