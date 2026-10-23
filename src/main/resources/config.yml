@@ -28,6 +28,16 @@ undo:
 # Check VoidAC's docs for its exempt command, or give players a bypass permission instead.
 anticheat-exempt-command: ""
 
+# The nuke: a core blast plus rings of explosions rolling outwards.
+# Bigger numbers = bigger crater, but also more lag. Each ring adds 4 more explosions than the last.
+nuke:
+  rings: 3
+  ring-spacing: 10
+  ring-power: 7.0
+  shockwave-radius: 80
+  # Fake blocks that fly out of the crater and vanish when they land
+  debris: 60
+
 # Optional custom item models from a resource pack (e.g. "ghsguns:pistol").
 # Leave empty to use the vanilla look until you have a resource pack.
 guns:
@@ -35,12 +45,11 @@ guns:
     name: "<gold>Pistol"
     damage: 5.0
     cooldown-ticks: 6
-    shots-per-trigger: 1
-    shot-interval-ticks: 1
     spread: 0.01
     range: 60
     magazine: 12
     reload-ticks: 30
+    headshot-multiplier: 1.5
     item-model: ""
   smg:
     name: "<yellow>SMG"
@@ -63,14 +72,64 @@ guns:
     range: 80
     magazine: 25
     reload-ticks: 45
+    headshot-multiplier: 1.5
+    item-model: ""
+  sniper:
+    # Left-click to scope in (perfect accuracy while scoped)
+    name: "<dark_aqua><bold>Sniper"
+    damage: 14.0
+    cooldown-ticks: 30
+    spread: 0.04
+    range: 250
+    magazine: 5
+    reload-ticks: 60
+    headshot-multiplier: 2.0
+    item-model: ""
+  shotgun:
+    name: "<gold><bold>Shotgun"
+    damage: 2.0
+    pellets: 8
+    cooldown-ticks: 18
+    spread: 0.11
+    range: 20
+    magazine: 6
+    reload-ticks: 50
+    item-model: ""
+  minigun:
+    name: "<gray><bold>Minigun"
+    damage: 1.5
+    cooldown-ticks: 4
+    shots-per-trigger: 4
+    shot-interval-ticks: 1
+    spread: 0.07
+    range: 50
+    magazine: 200
+    reload-ticks: 100
+    item-model: ""
+  flamethrower:
+    # Sets targets on fire (fire can't kill players either)
+    name: "<red>Flamethrower"
+    damage: 1.0
+    cooldown-ticks: 3
+    spread: 0.12
+    range: 9
+    magazine: 100
+    reload-ticks: 60
+    item-model: ""
+  grenade_launcher:
+    name: "<dark_green>Grenade Launcher"
+    damage: 0
+    cooldown-ticks: 20
+    range: 100
+    magazine: 6
+    reload-ticks: 60
+    explosion-power: 2.5
+    projectile-speed: 1.3
     item-model: ""
   rpg:
     name: "<red>RPG"
     damage: 0
     cooldown-ticks: 40
-    shots-per-trigger: 1
-    shot-interval-ticks: 1
-    spread: 0.0
     range: 120
     magazine: 1
     reload-ticks: 60
@@ -78,15 +137,13 @@ guns:
     projectile-speed: 1.6
     item-model: ""
   nuke:
+    # The core blast. Rings and effects are set in the "nuke" section above.
     name: "<dark_red><bold>NUKE"
     damage: 0
     cooldown-ticks: 200
-    shots-per-trigger: 1
-    shot-interval-ticks: 1
-    spread: 0.0
     range: 200
     magazine: 1
     reload-ticks: 200
-    explosion-power: 10.0
+    explosion-power: 12.0
     projectile-speed: 1.2
     item-model: ""

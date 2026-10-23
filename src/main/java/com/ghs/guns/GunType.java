@@ -6,6 +6,11 @@ public enum GunType {
     PISTOL(false),
     SMG(false),
     AR(false),
+    SNIPER(false),
+    SHOTGUN(false),
+    MINIGUN(false),
+    FLAMETHROWER(false),
+    GRENADE_LAUNCHER(true),
     RPG(true),
     NUKE(true);
 
