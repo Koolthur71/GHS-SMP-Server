@@ -16,7 +16,8 @@ troll:
 # Gun cooldowns between shots. Off = fire as fast as you can click (each gun's cooldown-ticks is ignored).
 gun-cooldowns: false
 # Never run out of ammo (no reloading at all). Careful with the nuke, lots of nukes = lots of lag.
-infinite-ammo: false
+# Can also be switched in-game from the /guns menu.
+infinite-ammo: true
 
 # Explosions break blocks when true
 explosions-break-blocks: true

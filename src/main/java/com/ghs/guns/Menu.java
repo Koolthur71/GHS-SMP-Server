@@ -185,15 +185,22 @@ public final class Menu implements Listener {
                 "Mining, building, movement and utility", "", count(ToolType.values().length) + " items"), this::openTools);
         set(h, 16, icon(Material.SLIME_BALL, "Troll Items", NamedTextColor.LIGHT_PURPLE,
                 "Wands and throwables to mess with people", "", count(TrollTool.values().length) + " items"), this::openTrollItems);
-        set(h, 29, icon(Material.PLAYER_HEAD, "Troll a Player", NamedTextColor.AQUA,
+        set(h, 28, icon(Material.PLAYER_HEAD, "Troll a Player", NamedTextColor.AQUA,
                 "Pick a player, then pick an effect.", "Includes permanent size changes."), pl -> openPlayers(pl, 0));
-        set(h, 31, icon(Material.RECOVERY_COMPASS, "Undo Last Explosion", NamedTextColor.YELLOW,
+        set(h, 30, icon(Material.RECOVERY_COMPASS, "Undo Last Explosion", NamedTextColor.YELLOW,
                 "Puts back the blocks from the most", "recent gun or nuke explosion"), pl -> {
             int n = plugin.undo().undo(1);
             pl.sendActionBar(Component.text(n > 0 ? "Undid the last explosion" : "Nothing to undo", n > 0 ? NamedTextColor.GREEN : NamedTextColor.YELLOW));
             pl.playSound(pl.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, 0.8f, 1.6f);
         });
-        set(h, 33, icon(Material.BARRIER, "Close", NamedTextColor.RED), HumanEntity::closeInventory);
+        boolean infinite = plugin.infiniteAmmo();
+        set(h, 32, icon(infinite ? Material.LIME_DYE : Material.GRAY_DYE, "Infinite Ammo: " + (infinite ? "ON" : "OFF"),
+                infinite ? NamedTextColor.GREEN : NamedTextColor.GRAY, infinite ? "Guns never need reloading" : "Guns use magazines and reload",
+                "", "▶ Click to switch " + (infinite ? "off" : "on")), pl -> {
+            plugin.setInfiniteAmmo(!plugin.infiniteAmmo());
+            openMain(pl);
+        });
+        set(h, 34, icon(Material.BARRIER, "Close", NamedTextColor.RED), HumanEntity::closeInventory);
         p.openInventory(inv);
     }
 

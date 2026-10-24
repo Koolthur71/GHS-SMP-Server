@@ -82,6 +82,11 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
         reloadConfig();
         // Add settings from newer versions to an existing config.yml
         getConfig().options().copyDefaults(true);
+        // One-time update: infinite ammo became the default in config version 2
+        if (getConfig().getInt("config-version", 1) < 2) {
+            getConfig().set("infinite-ammo", true);
+            getConfig().set("config-version", 2);
+        }
         saveConfig();
         stats.clear();
         ConfigurationSection guns = getConfig().getConfigurationSection("guns");
@@ -113,6 +118,15 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
 
     public NamespacedKey projectileKey() {
         return projectileKey;
+    }
+
+    public boolean infiniteAmmo() {
+        return getConfig().getBoolean("infinite-ammo", true);
+    }
+
+    public void setInfiniteAmmo(boolean on) {
+        getConfig().set("infinite-ammo", on);
+        saveConfig();
     }
 
     /** True if this player is allowed to use guns, tools and trolls (ops by default). */
@@ -165,14 +179,15 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
                 }
             }
             if (type != GunType.GRAVITY_GUN) {
-                lore.add(line("Magazine: " + s.magazine() + "   Range: " + (int) s.range() + " blocks", NamedTextColor.YELLOW));
+                String ammo = infiniteAmmo() ? "Ammo: ∞" : "Magazine: " + s.magazine();
+                lore.add(line(ammo + "   Range: " + (int) s.range() + " blocks", NamedTextColor.YELLOW));
             }
             lore.add(Component.empty());
             if (type == GunType.GRAVITY_GUN) {
                 lore.add(line("Right-click: grab / throw", NamedTextColor.AQUA));
             } else {
                 lore.add(line(type.nuke() ? "Right-click: launch" : "Right-click: shoot", NamedTextColor.AQUA));
-                lore.add(line("Sneak + right-click: reload", NamedTextColor.AQUA));
+                if (!infiniteAmmo()) lore.add(line("Sneak + right-click: reload", NamedTextColor.AQUA));
             }
             if (type == GunType.SNIPER) lore.add(line("Left-click: scope", NamedTextColor.AQUA));
             meta.lore(lore);
@@ -264,10 +279,16 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
             return true;
         }
         if (args.length == 0) {
-            sender.sendMessage(Component.text("/guns [menu] | /guns give <item|guns|nukes|trolls|tools|all> [player] | /guns size <player|all> <tiny|small|normal|big|huge|giant|number> | /guns troll <player> <effect> | /guns undo [amount|all|player <name>] | /guns list | /guns reload", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("/guns [menu] | /guns ammo [infinite|normal] | /guns give <item|guns|nukes|trolls|tools|all> [player] | /guns size <player|all> <tiny|small|normal|big|huge|giant|number> | /guns troll <player> <effect> | /guns undo [amount|all|player <name>] | /guns list | /guns reload", NamedTextColor.YELLOW));
             return true;
         }
         switch (args[0].toLowerCase()) {
+            case "ammo" -> {
+                boolean on = args.length >= 2 ? args[1].equalsIgnoreCase("infinite") || args[1].equalsIgnoreCase("on")
+                        : !infiniteAmmo();
+                setInfiniteAmmo(on);
+                sender.sendMessage(Component.text("Infinite ammo is now " + (on ? "ON" : "OFF") + ".", on ? NamedTextColor.GREEN : NamedTextColor.YELLOW));
+            }
             case "reload" -> {
                 loadStats();
                 sender.sendMessage(Component.text("GHSGuns config reloaded.", NamedTextColor.GREEN));
@@ -427,7 +448,7 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> options = new ArrayList<>();
         if (args.length == 1) {
-            options.addAll(List.of("menu", "give", "troll", "size", "undo", "list", "reload"));
+            options.addAll(List.of("menu", "give", "troll", "size", "ammo", "undo", "list", "reload"));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
             options.addAll(List.of("all", "guns", "nukes", "trolls", "tools"));
             for (ToolType t : ToolType.values()) options.add(t.id());

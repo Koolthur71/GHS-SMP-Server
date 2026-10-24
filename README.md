@@ -19,7 +19,7 @@ Everything is **ops only** by default:
 - With a permissions plugin like LuckPerms, you can give `ghsguns.use` to trusted players so they can use items without access to the menu. Don't give `ghsguns.*` to your default group.
 
 ## Guns
-Right-click to shoot (hold it for automatic guns). Sneak + right-click to reload. There's **no cooldown** by default (`gun-cooldowns: false`), and `infinite-ammo: true` turns off reloading.
+Right-click to shoot (hold it for automatic guns). Sneak + right-click to reload. There's **no cooldown** and **infinite ammo** by default. Switch infinite ammo with the button in the `/guns` menu or `/guns ammo [infinite|normal]`.
 
 | Gun | What it does |
 |-----|--------------|

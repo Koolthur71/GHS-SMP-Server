@@ -104,7 +104,7 @@ public final class GunListener implements Listener {
             scifi.gravity(player);
             return;
         }
-        if (getAmmo(item) <= 0) {
+        if (getAmmo(item) <= 0 && !plugin.infiniteAmmo()) {
             player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, 1f, 1.6f);
             startReload(player, type);
             return;
@@ -168,7 +168,8 @@ public final class GunListener implements Listener {
         GunStats stats = plugin.stats(type);
         Component name = MiniMessage.miniMessage().deserialize(stats.name());
         NamedTextColor color = ammo == 0 ? NamedTextColor.RED : NamedTextColor.WHITE;
-        player.sendActionBar(name.append(Component.text("  " + ammo + " / " + stats.magazine(), color)
+        String count = plugin.infiniteAmmo() ? "∞" : ammo + " / " + stats.magazine();
+        player.sendActionBar(name.append(Component.text("  " + count, color)
                 .decoration(TextDecoration.BOLD, false)));
     }
 
@@ -220,8 +221,8 @@ public final class GunListener implements Listener {
         ItemStack item = player.getInventory().getItemInMainHand();
         if (plugin.gunType(item) != type) return;
         int ammo = getAmmo(item);
-        if (ammo <= 0) return;
-        if (!plugin.getConfig().getBoolean("infinite-ammo", false)) {
+        if (ammo <= 0 && !plugin.infiniteAmmo()) return;
+        if (!plugin.infiniteAmmo()) {
             ammo--;
             setAmmo(player, ammo);
         }
