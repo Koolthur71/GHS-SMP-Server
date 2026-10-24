@@ -15,6 +15,10 @@ troll:
 
 # Gun cooldowns between shots. Off = fire as fast as you can click (each gun's cooldown-ticks is ignored).
 gun-cooldowns: false
+# Seconds between nukes for each player (all nuke types share it). Always applies, even with
+# gun-cooldowns off, so holding right-click can't fire 5 nukes a second and crash the server. 0 = off.
+nuke-cooldown-seconds: 10
+
 # Never run out of ammo (no reloading at all). Careful with the nuke, lots of nukes = lots of lag.
 # Can also be switched in-game from the /guns menu.
 infinite-ammo: true

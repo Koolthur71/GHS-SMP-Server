@@ -50,6 +50,8 @@ public final class GunListener implements Listener {
     private final GHSGuns plugin;
     private final SafeDamage safe;
     private final Map<UUID, Integer> cooldowns = new HashMap<>();
+    /** Separate per-player nuke cooldown, always on so nukes can't be spammed. */
+    private final Map<UUID, Integer> nukeCooldowns = new HashMap<>();
     private final Set<UUID> reloading = new HashSet<>();
     private final Set<UUID> scoped = new HashSet<>();
     private final List<Projectile> rockets = new ArrayList<>();
@@ -100,6 +102,15 @@ public final class GunListener implements Listener {
         if (ready != null && now < ready) return;
         cooldowns.put(player.getUniqueId(), now + cooldown);
 
+        if (type.nuke()) {
+            Integer nukeReady = nukeCooldowns.get(player.getUniqueId());
+            if (nukeReady != null && now < nukeReady) {
+                int secs = (nukeReady - now + 19) / 20;
+                player.sendActionBar(Component.text("☢ Nukes ready in " + secs + "s", NamedTextColor.RED));
+                return;
+            }
+        }
+
         if (type == GunType.GRAVITY_GUN) { // grab/throw, no ammo
             scifi.gravity(player);
             return;
@@ -108,6 +119,11 @@ public final class GunListener implements Listener {
             player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, 1f, 1.6f);
             startReload(player, type);
             return;
+        }
+
+        if (type.nuke()) {
+            int secs = Math.max(0, plugin.getConfig().getInt("nuke-cooldown-seconds", 10));
+            nukeCooldowns.put(player.getUniqueId(), now + secs * 20);
         }
 
         for (int i = 0; i < stats.shotsPerTrigger(); i++) {
@@ -129,6 +145,7 @@ public final class GunListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         UUID id = event.getPlayer().getUniqueId();
         cooldowns.remove(id);
+        nukeCooldowns.remove(id);
         reloading.remove(id);
         unscope(event.getPlayer());
     }
