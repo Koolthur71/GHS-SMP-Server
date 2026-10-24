@@ -54,6 +54,7 @@ public final class TrollListener implements Listener {
     private final NamespacedKey trollKey;
     private final MoreTrolls more;
     private final ChaosTrolls chaos;
+    private MegaTrolls mega;
     private final Map<UUID, Integer> cooldowns = new HashMap<>();
 
     public TrollListener(GHSGuns plugin, SafeDamage safe, MoreTrolls more, ChaosTrolls chaos) {
@@ -62,6 +63,10 @@ public final class TrollListener implements Listener {
         this.more = more;
         this.chaos = chaos;
         this.trollKey = new NamespacedKey(plugin, "troll_projectile");
+    }
+
+    void setMega(MegaTrolls mega) {
+        this.mega = mega;
     }
 
     // ------------------------------------------------------------------ item use
@@ -111,7 +116,8 @@ public final class TrollListener implements Listener {
             player.sendActionBar(Component.text("No target! Aim at a player or mob.", NamedTextColor.RED));
             return;
         }
-        if ((tool == TrollTool.HOT_POTATO || tool == TrollTool.JAIL_WAND) && !(target instanceof Player)) {
+        if ((tool == TrollTool.HOT_POTATO || tool == TrollTool.JAIL_WAND || tool == TrollTool.PINATA_STICK
+                || tool == TrollTool.SIZE_WAND) && !(target instanceof Player)) {
             player.sendActionBar(Component.text("That only works on players.", NamedTextColor.RED));
             return;
         }
@@ -130,6 +136,13 @@ public final class TrollListener implements Listener {
             case JAIL_WAND -> more.cage((Player) target);
             case LIGHTNING_WAND -> chaos.lightning(target);
             case BOING_GUN -> chaos.bouncy(target);
+            case METEOR_CALLER -> mega.meteors(target);
+            case ROCKET_WAND -> mega.rocket(target);
+            case RAINBOW_WAND -> mega.rainbow(target);
+            case PINATA_STICK -> mega.pinata(target);
+            case UFO_REMOTE -> mega.ufo(target);
+            case ORBIT_WAND -> mega.orbit(target);
+            case SIZE_WAND -> mega.cycleSize(player, target);
             default -> { }
         }
     }
@@ -169,6 +182,7 @@ public final class TrollListener implements Listener {
             case FLASHBANG -> chaos.flashbang(at);
             case STINK_BOMB -> chaos.stinkBomb(at);
             case TORNADO -> chaos.tornado(at);
+            case PARTY_CREEPERS -> mega.creeperParty(at);
             default -> { }
         }
     }
@@ -447,7 +461,8 @@ public final class TrollListener implements Listener {
     public static final List<String> COMMAND_TROLLS = Stream.concat(Stream.of(
             "launch", "anvil", "chickens", "freeze", "levitate", "disco", "faketnt",
             "fakeop", "creeper", "spin", "fakenuke", "fakeban", "demo"),
-            Stream.concat(MoreTrolls.COMMAND_TROLLS.stream(), ChaosTrolls.COMMAND_TROLLS.stream())).toList();
+            Stream.concat(Stream.concat(MoreTrolls.COMMAND_TROLLS.stream(), ChaosTrolls.COMMAND_TROLLS.stream()),
+                    MegaTrolls.COMMAND_TROLLS.stream())).toList();
 
     /** Run a troll on a player from the command. Returns false if the troll name is unknown. */
     public boolean commandTroll(Player target, String name) {
@@ -466,7 +481,7 @@ public final class TrollListener implements Listener {
             case "fakeban" -> fakeBan(target);
             case "demo" -> demo(target);
             default -> {
-                return more.commandTroll(target, name) || chaos.commandTroll(target, name);
+                return more.commandTroll(target, name) || chaos.commandTroll(target, name) || mega.commandTroll(target, name);
             }
         }
         return true;

@@ -57,6 +57,7 @@ public final class MoreTrolls implements Listener {
     private final SafeDamage safe;
     private final TempBlocks tempBlocks;
     private final NamespacedKey sizeKey;
+    private final NamespacedKey permSizeKey;
     private final NamespacedKey trapKey;
     private final List<Trap> traps = new ArrayList<>();
     /** Chat trolls: player -> mode ("drunk" / "uwu"), until a time in millis. Read from the async chat thread. */
@@ -71,6 +72,7 @@ public final class MoreTrolls implements Listener {
         this.safe = safe;
         this.tempBlocks = tempBlocks;
         this.sizeKey = new NamespacedKey(plugin, "troll_size");
+        this.permSizeKey = new NamespacedKey(plugin, "perm_size");
         this.trapKey = new NamespacedKey(plugin, "trap");
         Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 2L, 2L);
     }
@@ -91,6 +93,25 @@ public final class MoreTrolls implements Listener {
             attr.removeModifier(sizeKey);
             target.getWorld().spawnParticle(Particle.POOF, target.getLocation().add(0, 1, 0), 20, 0.4, 0.6, 0.4, 0.05);
         }, seconds * 20L);
+    }
+
+    /** Size that stays until changed back (saved with the player, survives relogs and restarts). 1.0 = normal. */
+    public void setPermanentSize(Player target, double scale) {
+        AttributeInstance attr = target.getAttribute(Attribute.SCALE);
+        if (attr == null) return;
+        attr.removeModifier(permSizeKey);
+        attr.removeModifier(sizeKey);
+        if (scale != 1.0) {
+            attr.addModifier(new AttributeModifier(permSizeKey, scale - 1, AttributeModifier.Operation.MULTIPLY_SCALAR_1, EquipmentSlotGroup.ANY));
+        }
+        World world = target.getWorld();
+        Location c = target.getLocation().add(0, target.getHeight() / 2, 0);
+        double r = Math.max(1, scale);
+        FX.sphere(c, r, 80, p -> world.spawnParticle(Particle.DUST, p, 1, 0, 0, 0, 0, FX.dust(200, 120, 255, 1.2f)));
+        FX.helix(target.getLocation(), new Vector(0, 1, 0), 2.5 * r, 0.8 * r, 1, 0.1, 0, p -> world.spawnParticle(Particle.WITCH, p, 1, 0, 0, 0, 0));
+        world.spawnParticle(Particle.END_ROD, c, 30, r / 2, r, r / 2, 0.05);
+        world.playSound(target.getLocation(), scale < 1 ? Sound.ENTITY_ILLUSIONER_CAST_SPELL : scale > 1 ? Sound.ENTITY_RAVAGER_ROAR : Sound.BLOCK_BEACON_POWER_SELECT,
+                1.2f, scale < 1 ? 2f : scale > 1 ? 0.8f : 1.2f);
     }
 
     @EventHandler

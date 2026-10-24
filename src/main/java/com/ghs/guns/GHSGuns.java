@@ -51,10 +51,16 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
         moreTrolls = new MoreTrolls(this, safe, tempBlocks);
         trolls = new TrollListener(this, safe, moreTrolls, new ChaosTrolls(this, safe));
         getServer().getPluginManager().registerEvents(new ToolListener(this, safe), this);
+        getServer().getPluginManager().registerEvents(new MoreTools(this, safe, tempBlocks), this);
         getServer().getPluginManager().registerEvents(safe, this);
         getServer().getPluginManager().registerEvents(tempBlocks, this);
         getServer().getPluginManager().registerEvents(moreTrolls, this);
-        getServer().getPluginManager().registerEvents(new GunListener(this, safe), this);
+        Nukes nukes = new Nukes(this, safe, trolls, tempBlocks);
+        getServer().getPluginManager().registerEvents(nukes, this);
+        MegaTrolls megaTrolls = new MegaTrolls(this, safe, nukes, moreTrolls);
+        trolls.setMega(megaTrolls);
+        getServer().getPluginManager().registerEvents(megaTrolls, this);
+        getServer().getPluginManager().registerEvents(new GunListener(this, safe, nukes, new SciFiGuns(this, safe, nukes)), this);
         getServer().getPluginManager().registerEvents(trolls, this);
         var cmd = getCommand("guns");
         if (cmd != null) {
@@ -71,6 +77,9 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
 
     public void loadStats() {
         reloadConfig();
+        // Add settings from newer versions to an existing config.yml
+        getConfig().options().copyDefaults(true);
+        saveConfig();
         stats.clear();
         ConfigurationSection guns = getConfig().getConfigurationSection("guns");
         for (GunType type : GunType.values()) {
@@ -147,7 +156,7 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
             meta.lore(lore);
             meta.setUnbreakable(true);
             meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES);
-            if (tool == ToolType.DRILL || tool == ToolType.MEGA_DRILL || tool == ToolType.TREE_FELLER) {
+            if (tool.material().name().startsWith("NETHERITE_") && tool != ToolType.DASH_BLADE) {
                 meta.addEnchant(Enchantment.EFFICIENCY, 5, true);
             }
             meta.setEnchantmentGlintOverride(true);
@@ -174,13 +183,51 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(Component.text("/guns give <item|guns|trolls|tools|all> [player] | /guns troll <player> <effect> | /guns undo [amount|all|player <name>] | /guns list | /guns reload", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("/guns give <item|guns|nukes|trolls|tools|all> [player] | /guns size <player|all> <tiny|small|normal|big|huge|giant|number> | /guns troll <player> <effect> | /guns undo [amount|all|player <name>] | /guns list | /guns reload", NamedTextColor.YELLOW));
             return true;
         }
         switch (args[0].toLowerCase()) {
             case "reload" -> {
                 loadStats();
                 sender.sendMessage(Component.text("GHSGuns config reloaded.", NamedTextColor.GREEN));
+            }
+            case "size" -> {
+                if (args.length < 3) {
+                    sender.sendMessage(Component.text("Usage: /guns size <player|all> <tiny|small|normal|big|huge|giant|number>", NamedTextColor.RED));
+                    return true;
+                }
+                Double scale = switch (args[2].toLowerCase()) {
+                    case "tiny" -> 0.25;
+                    case "small" -> 0.5;
+                    case "normal", "reset", "regular" -> 1.0;
+                    case "big" -> 1.5;
+                    case "huge" -> 2.5;
+                    case "giant" -> 4.0;
+                    default -> {
+                        try {
+                            yield Math.max(0.1, Math.min(10.0, Double.parseDouble(args[2])));
+                        } catch (NumberFormatException e) {
+                            yield null;
+                        }
+                    }
+                };
+                if (scale == null) {
+                    sender.sendMessage(Component.text("Unknown size: " + args[2], NamedTextColor.RED));
+                    return true;
+                }
+                List<Player> targets = new ArrayList<>();
+                if (args[1].equalsIgnoreCase("all")) {
+                    targets.addAll(Bukkit.getOnlinePlayers());
+                } else {
+                    Player p = Bukkit.getPlayerExact(args[1]);
+                    if (p == null) {
+                        sender.sendMessage(Component.text("Player not found.", NamedTextColor.RED));
+                        return true;
+                    }
+                    targets.add(p);
+                }
+                for (Player p : targets) moreTrolls.setPermanentSize(p, scale);
+                sender.sendMessage(Component.text("Set " + args[1] + " to size " + scale + (scale == 1.0 ? " (normal)" : " (stays after relog/restart)"), NamedTextColor.GREEN));
             }
             case "undo" -> {
                 int done;
@@ -245,7 +292,7 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
             }
             case "give" -> {
                 if (args.length < 2) {
-                    sender.sendMessage(Component.text("Usage: /guns give <item|guns|trolls|tools|all> [player]", NamedTextColor.RED));
+                    sender.sendMessage(Component.text("Usage: /guns give <item|guns|nukes|trolls|tools|all> [player]", NamedTextColor.RED));
                     return true;
                 }
                 Player target;
@@ -264,7 +311,10 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
                 List<ItemStack> toGive = new ArrayList<>();
                 String what = args[1].toLowerCase();
                 if (what.equals("all") || what.equals("guns")) {
-                    for (GunType t : GunType.values()) toGive.add(createGun(t));
+                    for (GunType t : GunType.values()) if (!t.nuke()) toGive.add(createGun(t));
+                }
+                if (what.equals("all") || what.equals("nukes")) {
+                    for (GunType t : GunType.values()) if (t.nuke()) toGive.add(createGun(t));
                 }
                 if (what.equals("all") || what.equals("trolls")) {
                     for (TrollTool t : TrollTool.values()) toGive.add(createTrollTool(t));
@@ -299,12 +349,17 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> options = new ArrayList<>();
         if (args.length == 1) {
-            options.addAll(List.of("give", "troll", "undo", "list", "reload"));
+            options.addAll(List.of("give", "troll", "size", "undo", "list", "reload"));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
-            options.addAll(List.of("all", "guns", "trolls", "tools"));
+            options.addAll(List.of("all", "guns", "nukes", "trolls", "tools"));
             for (ToolType t : ToolType.values()) options.add(t.id());
             for (GunType t : GunType.values()) options.add(t.id());
             for (TrollTool t : TrollTool.values()) options.add(t.id());
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("size")) {
+            options.add("all");
+            for (Player p : Bukkit.getOnlinePlayers()) options.add(p.getName());
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("size")) {
+            options.addAll(List.of("tiny", "small", "normal", "big", "huge", "giant"));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("troll")) {
             options.add("all");
             for (Player p : Bukkit.getOnlinePlayers()) options.add(p.getName());

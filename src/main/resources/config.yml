@@ -43,6 +43,20 @@ nuke:
   # Fake blocks that fly out of the crater and vanish when they land
   debris: 60
 
+# The Tsar Bomba: the same idea as the nuke, just way bigger. Expect lag.
+tsar-bomba:
+  rings: 4
+  ring-spacing: 12
+  ring-power: 7.5
+  shockwave-radius: 150
+  debris: 120
+  cloud-height: 85
+  cloud-radius: 35
+
+cluster-nuke:
+  bomblets: 14
+  bomblet-power: 4.0
+
 # Optional custom item models from a resource pack (e.g. "ghsguns:pistol").
 # Leave empty to use the vanilla look until you have a resource pack.
 guns:
@@ -151,4 +165,147 @@ guns:
     reload-ticks: 200
     explosion-power: 12.0
     projectile-speed: 1.2
+    item-model: ""
+  tsar_bomba:
+    name: "<dark_red><bold>TSAR BOMBA"
+    damage: 0
+    range: 200
+    magazine: 1
+    reload-ticks: 300
+    explosion-power: 16.0
+    projectile-speed: 1.2
+    item-model: ""
+  cluster_nuke:
+    # Blows up, then throws bomblets everywhere
+    name: "<gold><bold>Cluster Nuke"
+    damage: 0
+    range: 200
+    magazine: 1
+    reload-ticks: 160
+    explosion-power: 6.0
+    projectile-speed: 1.2
+    item-model: ""
+  cryo_nuke:
+    # Freezes everyone, snowstorm, temporary snow blanket
+    name: "<aqua><bold>Cryo Nuke"
+    damage: 0
+    range: 200
+    magazine: 1
+    reload-ticks: 160
+    explosion-power: 6.0
+    projectile-speed: 1.2
+    item-model: ""
+  chicken_nuke:
+    # No block damage. Chickens. So many chickens.
+    name: "<yellow><bold>Chicken Nuke"
+    damage: 0
+    range: 200
+    magazine: 1
+    reload-ticks: 100
+    projectile-speed: 1.2
+    item-model: ""
+  party_nuke:
+    # No block damage. A massive firework show.
+    name: "<light_purple><bold>Party Nuke"
+    damage: 0
+    range: 200
+    magazine: 1
+    reload-ticks: 100
+    projectile-speed: 1.2
+    item-model: ""
+  black_hole_bomb:
+    # Sucks everything in, rips up the ground, then collapses
+    name: "<dark_purple><bold>Black Hole Bomb"
+    damage: 0
+    range: 200
+    magazine: 1
+    reload-ticks: 200
+    projectile-speed: 1.2
+    item-model: ""
+  raygun:
+    name: "<green><bold>Raygun"
+    damage: 6.0
+    spread: 0.0
+    range: 60
+    magazine: 20
+    reload-ticks: 40
+    item-model: ""
+  laser_rifle:
+    # Pierces through everything in a line
+    name: "<red><bold>Laser Rifle"
+    damage: 3.0
+    shots-per-trigger: 2
+    shot-interval-ticks: 2
+    spread: 0.005
+    range: 70
+    magazine: 60
+    reload-ticks: 50
+    item-model: ""
+  railgun:
+    # Charges up, then goes through walls and everything in its path
+    name: "<aqua><bold>Railgun"
+    damage: 16.0
+    range: 120
+    magazine: 3
+    reload-ticks: 70
+    item-model: ""
+  tesla_gun:
+    # Chain lightning: jumps between up to 6 targets
+    name: "<blue><bold>Tesla Gun"
+    damage: 5.0
+    range: 30
+    magazine: 15
+    reload-ticks: 50
+    item-model: ""
+  plasma_cannon:
+    name: "<dark_aqua><bold>Plasma Cannon"
+    damage: 0
+    range: 60
+    magazine: 8
+    reload-ticks: 60
+    explosion-power: 2.5
+    projectile-speed: 1.3
+    item-model: ""
+  homing_launcher:
+    # Locks onto what you aim at (or the nearest mob/player)
+    name: "<red>Homing Missile Launcher"
+    damage: 0
+    range: 100
+    magazine: 4
+    reload-ticks: 70
+    explosion-power: 3.0
+    projectile-speed: 0.9
+    item-model: ""
+  gravity_gun:
+    # Right-click to grab, right-click again to throw. No ammo.
+    name: "<light_purple><bold>Gravity Gun"
+    damage: 0
+    range: 25
+    magazine: 1
+    item-model: ""
+  black_hole_gun:
+    # Fires a mini black hole that sucks things in (no block damage)
+    name: "<dark_purple>Black Hole Gun"
+    damage: 0
+    range: 60
+    magazine: 3
+    reload-ticks: 80
+    projectile-speed: 0.8
+    item-model: ""
+  bubble_gun:
+    # Traps whoever it hits in a floating bubble
+    name: "<aqua>Bubble Gun"
+    damage: 0
+    range: 30
+    magazine: 10
+    reload-ticks: 30
+    projectile-speed: 0.6
+    item-model: ""
+  confetti_cannon:
+    # No damage, just a big confetti blast that pushes people back
+    name: "<gradient:red:yellow:green:aqua:light_purple>Confetti Cannon"
+    damage: 0
+    range: 10
+    magazine: 10
+    reload-ticks: 30
     item-model: ""

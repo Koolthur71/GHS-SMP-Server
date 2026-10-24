@@ -26,7 +26,15 @@ public enum TrollTool {
     FLASHBANG("<white><bold>Flashbang", Material.IRON_NUGGET, true, 60, "Throw it to blind everyone nearby"),
     STINK_BOMB("<dark_green>Stink Bomb", Material.FERMENTED_SPIDER_EYE, true, 60, "Throw it. Everyone nearby will hate you."),
     TORNADO("<gray><bold>Tornado in a Bottle", Material.WIND_CHARGE, true, 160, "Throw it to start a tornado that sucks everyone in"),
-    SHEEP_LAUNCHER("<light_purple>Sheep Launcher", Material.WHITE_WOOL, false, 30, "Right-click to fire an exploding rainbow sheep");
+    SHEEP_LAUNCHER("<light_purple>Sheep Launcher", Material.WHITE_WOOL, false, 30, "Right-click to fire an exploding rainbow sheep"),
+    METEOR_CALLER("<gold><bold>Meteor Caller", Material.FIRE_CHARGE, false, 160, "Right-click a player to call a meteor shower on them (no block damage)"),
+    ROCKET_WAND("<red>Rocket Wand", Material.FIREWORK_ROCKET, false, 60, "Right-click a player to blast them off in a firework"),
+    RAINBOW_WAND("<gradient:red:yellow:green:aqua:light_purple>Rainbow Wand", Material.PRISMARINE_CRYSTALS, false, 40, "Right-click a player to give them a rainbow trail for 30 seconds"),
+    PINATA_STICK("<light_purple>Piñata Stick", Material.BAMBOO, false, 200, "Right-click a player to turn them into a piñata for 30 seconds"),
+    PARTY_CREEPERS("<green><bold>Party Creepers", Material.CREEPER_HEAD, true, 200, "Throw it to summon creepers that explode into confetti"),
+    UFO_REMOTE("<green><bold>UFO Remote", Material.ECHO_SHARD, false, 200, "Right-click a player to have them abducted by a UFO"),
+    ORBIT_WAND("<white>Orbit Wand", Material.ENDER_PEARL, false, 100, "Right-click a player to send them spinning in orbit"),
+    SIZE_WAND("<light_purple><bold>Size Wand", Material.BLAZE_POWDER, false, 10, "Right-click a player to make them bigger (permanent!). Sneak + click to reset.");
 
     private final String name;
     private final Material material;

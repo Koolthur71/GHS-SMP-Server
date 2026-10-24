@@ -67,10 +67,13 @@ public final class ToolListener implements Listener {
         ToolType tool = plugin.toolType(player.getInventory().getItemInMainHand());
         if (tool == null) return;
         switch (tool) {
-            case DRILL, MEGA_DRILL -> {
+            case DRILL, MEGA_DRILL, EXCAVATOR -> {
                 RayTraceResult hit = player.rayTraceBlocks(6, FluidCollisionMode.NEVER);
                 BlockFace face = hit != null && hit.getHitBlockFace() != null ? hit.getHitBlockFace() : BlockFace.UP;
                 mineArea(player, event.getBlock(), face, tool == ToolType.MEGA_DRILL ? 2 : 1, false);
+            }
+            case VEIN_MINER -> {
+                if (isOre(event.getBlock().getType())) mineVein(player, event.getBlock());
             }
             case TREE_FELLER -> {
                 if (Tag.LOGS.isTagged(event.getBlock().getType())) fellTree(player, event.getBlock());
@@ -116,6 +119,45 @@ public final class ToolListener implements Listener {
         return broken;
     }
 
+    static boolean isOre(Material type) {
+        return type.name().endsWith("_ORE") || type == Material.ANCIENT_DEBRIS;
+    }
+
+    private void mineVein(Player player, Block start) {
+        Material type = start.getType();
+        List<Block> vein = new ArrayList<>();
+        Set<Block> seen = new HashSet<>();
+        Deque<Block> queue = new ArrayDeque<>();
+        queue.add(start);
+        seen.add(start);
+        while (!queue.isEmpty() && vein.size() < 64) {
+            Block b = queue.poll();
+            for (int x = -1; x <= 1; x++) {
+                for (int y = -1; y <= 1; y++) {
+                    for (int z = -1; z <= 1; z++) {
+                        Block n = b.getRelative(x, y, z);
+                        if (seen.add(n) && n.getType() == type) {
+                            vein.add(n);
+                            queue.add(n);
+                        }
+                    }
+                }
+            }
+        }
+        if (vein.isEmpty()) return;
+        World world = start.getWorld();
+        Location from = start.getLocation().add(0.5, 0.5, 0.5);
+        for (Block b : vein) {
+            Location to = b.getLocation().add(0.5, 0.5, 0.5);
+            FX.line(from, to, 0.3, p -> world.spawnParticle(Particle.DUST, p, 1, 0, 0, 0, 0, FX.dust(120, 255, 255, 0.7f)));
+            world.spawnParticle(Particle.BLOCK, to, 10, 0.3, 0.3, 0.3, b.getBlockData());
+            world.spawnParticle(Particle.WAX_OFF, to, 4, 0.3, 0.3, 0.3, 0.5);
+        }
+        breakAll(player, vein);
+        world.playSound(from, Sound.BLOCK_AMETHYST_CLUSTER_BREAK, 1.2f, 1.2f);
+        world.playSound(from, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8f, 0.8f);
+    }
+
     private void fellTree(Player player, Block start) {
         List<Block> logs = new ArrayList<>();
         Set<Block> seen = new HashSet<>();
@@ -152,11 +194,12 @@ public final class ToolListener implements Listener {
         if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
         Player player = event.getPlayer();
         ToolType tool = plugin.toolType(player.getInventory().getItemInMainHand());
-        if (tool == null || tool == ToolType.GRAPPLING_HOOK || tool == ToolType.TREE_FELLER) return;
+        if (tool != ToolType.DRILL && tool != ToolType.MEGA_DRILL && tool != ToolType.EXCAVATOR
+                && tool != ToolType.JETPACK && tool != ToolType.TELEPORT_GUN) return; // the rest live in MoreTools
         event.setCancelled(true);
         if (!player.hasPermission("ghsguns.use")) return;
         switch (tool) {
-            case DRILL, MEGA_DRILL -> bore(player, tool == ToolType.MEGA_DRILL ? 2 : 1);
+            case DRILL, MEGA_DRILL, EXCAVATOR -> bore(player, tool == ToolType.MEGA_DRILL ? 2 : 1);
             case JETPACK -> jetpack(player);
             case TELEPORT_GUN -> teleport(player);
             default -> { }
