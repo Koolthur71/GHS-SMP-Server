@@ -6,6 +6,7 @@ Troll guns and troll items for the GHS SMP (Paper 26.3). It works for Java and B
 
 ## Guns
 Right-click to shoot (hold it for automatic guns). Sneak + right-click to reload.
+Guns have **no cooldown** by default, so they fire as fast as you click. Turn cooldowns back on with `gun-cooldowns: true`, or skip reloading entirely with `infinite-ammo: true`.
 
 | Gun | What it does |
 |-----|--------------|
@@ -38,10 +39,28 @@ Right-click to shoot (hold it for automatic guns). Sneak + right-click to reload
 | Jail Wand | Locks a player in a glass cage for 10 seconds |
 | Banana Peel | Throw it on the ground. The next player to walk over it slips, spins and goes flying. |
 | Web Shooter | Throw it to make a cobweb trap that disappears after 6 seconds |
+| Smite Wand | Strikes a player with lightning that looks real but is harmless |
+| Boing Gun | Makes a player bounce nonstop for 15 seconds |
+| Flashbang | Throw it: everyone within 14 blocks is blinded and hears ringing |
+| Stink Bomb | Throw it: a green cloud that gives everyone nearby nausea |
+| Tornado in a Bottle | Throw it: a tornado that sucks in and spins everyone nearby for 6 seconds |
+| Sheep Launcher | Fires a rainbow sheep that explodes into wool and confetti (no block damage) |
+
+## Tools
+| Tool | What it does |
+|------|--------------|
+| Drill | Mines 3x3. Hold right-click on a wall to bore a tunnel. |
+| Mega Drill | Mines 5x5. Hold right-click on a wall to bore a huge tunnel. |
+| Tree Feller | Chop one log and the whole tree comes down |
+| Grappling Hook | Cast it, then reel in to fly to the hook. Hook a player to yank them over. |
+| Jetpack | Hold right-click to fly where you're looking (no fall damage) |
+| Teleport Gun | Right-click to teleport where you're looking (up to 80 blocks) |
+
+The drills and tree feller break blocks as if you mined them yourself, so land-claim plugins still protect builds and you get the normal drops.
 
 ## Commands (permission `ghsguns.admin`, op by default)
-- `/guns give <item|guns|trolls|all> [player]`
-- `/guns troll <player|all> <effect>`. Effects: `launch`, `anvil`, `chickens`, `freeze`, `levitate`, `disco`, `faketnt`, `fakeop` (fake "you are now op" message), `creeper` (hiss behind them), `spin`, `fakenuke` (siren and countdown, then "jk"), `fakeban` (kicks them with a fake ban message; they can rejoin), `demo` (shows the demo-mode screen), `shrink`, `giant`, `cage`, `skydrop` (teleports them 120 blocks up; the fall can't kill), `potato`, `drunk` (wobbly walking and slurred chat for 30s), `uwu` (their chat turns uwu for 60s), `jumpscare`, `paranoia` (creepy sounds around them for 30s), `fakediamonds` (diamonds that vanish when they get close), `fakeleave` (fake "left the game" message), `fakedeath` (fake funny death message), `shuffle` (shuffles their hotbar; no items lost), `pigrain`, `webs`
+- `/guns give <item|guns|trolls|tools|all> [player]`
+- `/guns troll <player|all> <effect>`. Effects: `launch`, `anvil`, `chickens`, `freeze`, `levitate`, `disco`, `faketnt`, `fakeop` (fake "you are now op" message), `creeper` (hiss behind them), `spin`, `fakenuke` (siren and countdown, then "jk"), `fakeban` (kicks them with a fake ban message; they can rejoin), `demo` (shows the demo-mode screen), `shrink`, `giant`, `cage`, `skydrop` (teleports them 120 blocks up; the fall can't kill), `potato`, `drunk` (wobbly walking and slurred chat for 30s), `uwu` (their chat turns uwu for 60s), `jumpscare`, `paranoia` (creepy sounds around them for 30s), `fakediamonds` (diamonds that vanish when they get close), `fakeleave` (fake "left the game" message), `fakedeath` (fake funny death message), `shuffle` (shuffles their hotbar; no items lost), `pigrain`, `webs`, `lightning`, `bouncy`, `flashbang`, `stinkbomb`, `tornado`, `sheep`, `fakeadvancement` (fake advancement like "[Skill Issue]"), `slowmo`, `zoomies`, `screenshake`, `chickenhat` (a chicken rides on their head for 20s), `cakerain` (food they can't pick up)
 - `/guns undo`: put back blocks from the last explosion
 - `/guns undo <amount>` / `/guns undo all` / `/guns undo player <name>`
 - `/guns list`, `/guns reload`

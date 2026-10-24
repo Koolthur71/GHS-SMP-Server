@@ -95,9 +95,11 @@ public final class GunListener implements Listener {
 
         int now = Bukkit.getCurrentTick();
         GunStats stats = plugin.stats(type);
+        // With cooldowns off, still ignore a second click in the same tick (one click can fire two events)
+        int cooldown = plugin.getConfig().getBoolean("gun-cooldowns", false) ? stats.cooldownTicks() : 1;
         Integer ready = cooldowns.get(player.getUniqueId());
         if (ready != null && now < ready) return;
-        cooldowns.put(player.getUniqueId(), now + stats.cooldownTicks());
+        cooldowns.put(player.getUniqueId(), now + cooldown);
 
         if (getAmmo(item) <= 0) {
             player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_FAIL, 1f, 1.6f);
@@ -216,8 +218,11 @@ public final class GunListener implements Listener {
         if (plugin.gunType(item) != type) return;
         int ammo = getAmmo(item);
         if (ammo <= 0) return;
-        setAmmo(player, ammo - 1);
-        showAmmo(player, type, ammo - 1);
+        if (!plugin.getConfig().getBoolean("infinite-ammo", false)) {
+            ammo--;
+            setAmmo(player, ammo);
+        }
+        showAmmo(player, type, ammo);
 
         GunStats stats = plugin.stats(type);
         Location eye = player.getEyeLocation();

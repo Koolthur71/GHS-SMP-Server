@@ -20,7 +20,13 @@ public enum TrollTool {
     HOT_POTATO("<gold>Hot Potato", Material.BAKED_POTATO, false, 200, "Right-click a player to give them the hot potato"),
     JAIL_WAND("<gray>Jail Wand", Material.IRON_BARS, false, 200, "Right-click a player to lock them in a glass cage for 10 seconds"),
     BANANA_PEEL("<yellow>Banana Peel", Material.YELLOW_DYE, true, 40, "Throw it on the ground and wait for someone to slip"),
-    WEB_SHOOTER("<white>Web Shooter", Material.COBWEB, true, 60, "Throw it to make a web trap (disappears after 6 seconds)");
+    WEB_SHOOTER("<white>Web Shooter", Material.COBWEB, true, 60, "Throw it to make a web trap (disappears after 6 seconds)"),
+    LIGHTNING_WAND("<yellow><bold>Smite Wand", Material.LIGHTNING_ROD, false, 40, "Right-click a player to smite them with (harmless) lightning"),
+    BOING_GUN("<green>Boing Gun", Material.SLIME_BALL, false, 100, "Right-click a player to make them bounce nonstop for 15 seconds"),
+    FLASHBANG("<white><bold>Flashbang", Material.IRON_NUGGET, true, 60, "Throw it to blind everyone nearby"),
+    STINK_BOMB("<dark_green>Stink Bomb", Material.FERMENTED_SPIDER_EYE, true, 60, "Throw it. Everyone nearby will hate you."),
+    TORNADO("<gray><bold>Tornado in a Bottle", Material.WIND_CHARGE, true, 160, "Throw it to start a tornado that sucks everyone in"),
+    SHEEP_LAUNCHER("<light_purple>Sheep Launcher", Material.WHITE_WOOL, false, 30, "Right-click to fire an exploding rainbow sheep");
 
     private final String name;
     private final Material material;
