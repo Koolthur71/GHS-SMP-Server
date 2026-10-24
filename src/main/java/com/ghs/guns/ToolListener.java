@@ -65,7 +65,7 @@ public final class ToolListener implements Listener {
         Player player = event.getPlayer();
         if (breaking.contains(player.getUniqueId())) return;
         ToolType tool = plugin.toolType(player.getInventory().getItemInMainHand());
-        if (tool == null) return;
+        if (tool == null || !plugin.canUse(player)) return;
         switch (tool) {
             case DRILL, MEGA_DRILL, EXCAVATOR -> {
                 RayTraceResult hit = player.rayTraceBlocks(6, FluidCollisionMode.NEVER);
@@ -197,7 +197,7 @@ public final class ToolListener implements Listener {
         if (tool != ToolType.DRILL && tool != ToolType.MEGA_DRILL && tool != ToolType.EXCAVATOR
                 && tool != ToolType.JETPACK && tool != ToolType.TELEPORT_GUN) return; // the rest live in MoreTools
         event.setCancelled(true);
-        if (!player.hasPermission("ghsguns.use")) return;
+        if (!plugin.canUse(player)) return;
         switch (tool) {
             case DRILL, MEGA_DRILL, EXCAVATOR -> bore(player, tool == ToolType.MEGA_DRILL ? 2 : 1);
             case JETPACK -> jetpack(player);
@@ -269,7 +269,7 @@ public final class ToolListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onFish(PlayerFishEvent event) {
         Player player = event.getPlayer();
-        if (plugin.toolType(player.getInventory().getItemInMainHand()) != ToolType.GRAPPLING_HOOK) return;
+        if (plugin.toolType(player.getInventory().getItemInMainHand()) != ToolType.GRAPPLING_HOOK || !plugin.canUse(player)) return;
         FishHook hook = event.getHook();
         switch (event.getState()) {
             case FISHING -> hook.setVelocity(hook.getVelocity().multiply(1.8)); // casts further

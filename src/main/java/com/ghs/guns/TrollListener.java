@@ -92,7 +92,7 @@ public final class TrollListener implements Listener {
     }
 
     private void use(Player player, TrollTool tool, LivingEntity clicked) {
-        if (!player.hasPermission("ghsguns.use")) return;
+        if (!plugin.canUse(player)) return;
         int now = Bukkit.getCurrentTick();
         Integer ready = cooldowns.get(player.getUniqueId());
         if (ready != null && now < ready) return;

@@ -163,6 +163,7 @@ public final class MoreTrolls implements Listener {
         if (!(event.getEntity() instanceof LivingEntity victim)) return;
         if (plugin.trollTool(attacker.getInventory().getItemInMainHand()) == TrollTool.FISH_SLAP) {
             event.setCancelled(true);
+            if (!plugin.canUse(attacker)) return;
             fishSlap(attacker, victim);
             return;
         }

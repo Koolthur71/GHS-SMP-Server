@@ -74,6 +74,17 @@ public enum ToolType {
         return lore;
     }
 
+    /** Which section it's listed under in the menu. */
+    public String group() {
+        return switch (this) {
+            case DRILL, MEGA_DRILL, EXCAVATOR, TREE_FELLER, VEIN_MINER, SMELTER_PICK -> "Mining";
+            case HARVEST_SCYTHE, BUILDERS_WAND -> "Building & Farming";
+            case GRAPPLING_HOOK, JETPACK, TELEPORT_GUN, DASH_BLADE, SKY_WALKER, RECALL_COMPASS -> "Movement";
+            case ORE_SCANNER, ITEM_MAGNET, MOB_CATCHER, HEALING_STAFF, NIGHT_VISION_GOGGLES, QUAKE_HAMMER -> "Utility";
+            case TIME_WAND, WEATHER_WAND -> "Admin";
+        };
+    }
+
     public String id() {
         return name().toLowerCase(Locale.ROOT);
     }

@@ -35,6 +35,7 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
     private TrollListener trolls;
     private TempBlocks tempBlocks;
     private MoreTrolls moreTrolls;
+    private Menu menu;
 
     @Override
     public void onEnable() {
@@ -62,6 +63,8 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
         getServer().getPluginManager().registerEvents(megaTrolls, this);
         getServer().getPluginManager().registerEvents(new GunListener(this, safe, nukes, new SciFiGuns(this, safe, nukes)), this);
         getServer().getPluginManager().registerEvents(trolls, this);
+        menu = new Menu(this, trolls, moreTrolls);
+        getServer().getPluginManager().registerEvents(menu, this);
         var cmd = getCommand("guns");
         if (cmd != null) {
             cmd.setExecutor(this);
@@ -112,17 +115,70 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
         return projectileKey;
     }
 
+    /** True if this player is allowed to use guns, tools and trolls (ops by default). */
+    public boolean canUse(Player player) {
+        return player.hasPermission("ghsguns.use");
+    }
+
+    private static Component line(String text, NamedTextColor color) {
+        return Component.text(text, color).decoration(TextDecoration.ITALIC, false);
+    }
+
+    /** Word-wrap a description so tooltips don't get too wide. */
+    private static void wrap(List<Component> lore, String text, NamedTextColor color) {
+        StringBuilder current = new StringBuilder();
+        for (String word : text.split(" ")) {
+            if (current.length() > 0 && current.length() + word.length() > 38) {
+                lore.add(line(current.toString(), color));
+                current.setLength(0);
+            }
+            if (current.length() > 0) current.append(' ');
+            current.append(word);
+        }
+        if (current.length() > 0) lore.add(line(current.toString(), color));
+    }
+
+    private static Component tag(String category, String group, NamedTextColor color) {
+        return Component.text(category, color, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false)
+                .append(Component.text("  " + group, NamedTextColor.DARK_GRAY).decoration(TextDecoration.BOLD, false));
+    }
+
     public ItemStack createGun(GunType type) {
         GunStats s = stats(type);
-        ItemStack item = new ItemStack(Material.CARROT_ON_A_STICK);
+        Material material = type.material();
+        Material override = Material.matchMaterial(getConfig().getString("guns." + type.id() + ".material", ""));
+        if (override != null && override.isItem()) material = override;
+        ItemStack item = new ItemStack(material);
         item.editMeta(meta -> {
             meta.displayName(MiniMessage.miniMessage().deserialize(s.name()).decoration(TextDecoration.ITALIC, false));
-            meta.lore(List.of(
-                    Component.text("Right-click to shoot", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
-                    Component.text("Sneak + right-click to reload", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
-            ));
+            List<Component> lore = new ArrayList<>();
+            lore.add(type.nuke() ? tag("☢ NUKE", type.group(), NamedTextColor.RED) : tag("⚔ GUN", type.group(), NamedTextColor.GOLD));
+            wrap(lore, type.description(), NamedTextColor.GRAY);
+            lore.add(Component.empty());
+            if (s.damage() > 0) {
+                String dmg = s.damage() / 2 + " ❤" + (s.pellets() > 1 ? " x" + s.pellets() + " pellets" : "");
+                lore.add(line("Damage: " + dmg, NamedTextColor.RED));
+            }
+            if (type.explosive() || type == GunType.PLASMA_CANNON || type == GunType.HOMING_LAUNCHER) {
+                if (s.explosionPower() > 0 && type != GunType.CHICKEN_NUKE && type != GunType.PARTY_NUKE && type != GunType.BLACK_HOLE_BOMB) {
+                    lore.add(line("Blast power: " + s.explosionPower(), NamedTextColor.RED));
+                }
+            }
+            if (type != GunType.GRAVITY_GUN) {
+                lore.add(line("Magazine: " + s.magazine() + "   Range: " + (int) s.range() + " blocks", NamedTextColor.YELLOW));
+            }
+            lore.add(Component.empty());
+            if (type == GunType.GRAVITY_GUN) {
+                lore.add(line("Right-click: grab / throw", NamedTextColor.AQUA));
+            } else {
+                lore.add(line(type.nuke() ? "Right-click: launch" : "Right-click: shoot", NamedTextColor.AQUA));
+                lore.add(line("Sneak + right-click: reload", NamedTextColor.AQUA));
+            }
+            if (type == GunType.SNIPER) lore.add(line("Left-click: scope", NamedTextColor.AQUA));
+            meta.lore(lore);
+            meta.setMaxStackSize(1);
             meta.setUnbreakable(true);
-            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES);
+            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
             if (s.itemModel() != null && !s.itemModel().isBlank()) {
                 NamespacedKey model = NamespacedKey.fromString(s.itemModel());
                 if (model != null) meta.setItemModel(model);
@@ -137,9 +193,16 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
         ItemStack item = new ItemStack(tool.material());
         item.editMeta(meta -> {
             meta.displayName(MiniMessage.miniMessage().deserialize(tool.displayName()).decoration(TextDecoration.ITALIC, false));
-            meta.lore(List.of(Component.text(tool.description(), NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
+            List<Component> lore = new ArrayList<>();
+            lore.add(tag("☺ TROLL", tool.group(), NamedTextColor.LIGHT_PURPLE));
+            wrap(lore, tool.description(), NamedTextColor.GRAY);
+            lore.add(Component.empty());
+            lore.add(line(tool.thrown() ? "Right-click: throw" : tool == TrollTool.SHEEP_LAUNCHER ? "Right-click: fire"
+                    : tool == TrollTool.FISH_SLAP ? "Hit someone with it" : "Right-click: use on who you're looking at", NamedTextColor.AQUA));
+            meta.lore(lore);
             meta.setMaxStackSize(1);
             meta.setEnchantmentGlintOverride(true);
+            meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
             meta.getPersistentDataContainer().set(trollKey, PersistentDataType.STRING, tool.id());
         });
         return item;
@@ -150,14 +213,15 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
         item.editMeta(meta -> {
             meta.displayName(MiniMessage.miniMessage().deserialize(tool.displayName()).decoration(TextDecoration.ITALIC, false));
             List<Component> lore = new ArrayList<>();
-            for (String line : tool.lore()) {
-                lore.add(Component.text(line, NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
-            }
+            lore.add(tag("⛏ TOOL", tool.group(), NamedTextColor.GREEN));
+            for (String l : tool.lore()) wrap(lore, l, NamedTextColor.GRAY);
             meta.lore(lore);
+            meta.setMaxStackSize(1);
             meta.setUnbreakable(true);
-            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES);
+            meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
             if (tool.material().name().startsWith("NETHERITE_") && tool != ToolType.DASH_BLADE) {
                 meta.addEnchant(Enchantment.EFFICIENCY, 5, true);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             }
             meta.setEnchantmentGlintOverride(true);
             meta.getPersistentDataContainer().set(toolKey, PersistentDataType.STRING, tool.id());
@@ -180,10 +244,27 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
         return GunType.fromId(item.getItemMeta().getPersistentDataContainer().get(gunKey, PersistentDataType.STRING));
     }
 
+    private static <T> void listGroup(CommandSender sender, String title, NamedTextColor color, T[] all,
+                                      java.util.function.Predicate<T> filter, java.util.function.Function<T, String> group,
+                                      java.util.function.Function<T, String> id) {
+        sender.sendMessage(Component.text(title, color, TextDecoration.BOLD));
+        java.util.Map<String, List<String>> grouped = new java.util.LinkedHashMap<>();
+        for (T t : all) if (filter.test(t)) grouped.computeIfAbsent(group.apply(t), k -> new ArrayList<>()).add(id.apply(t));
+        grouped.forEach((g, ids) -> sender.sendMessage(Component.text("  " + g + ": ", color).append(Component.text(String.join(", ", ids), NamedTextColor.GRAY))));
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!sender.hasPermission("ghsguns.admin")) {
+            sender.sendMessage(Component.text("You don't have permission to use this.", NamedTextColor.RED));
+            return true;
+        }
+        if ((args.length == 0 || args[0].equalsIgnoreCase("menu")) && sender instanceof Player p) {
+            menu.openMain(p);
+            return true;
+        }
         if (args.length == 0) {
-            sender.sendMessage(Component.text("/guns give <item|guns|nukes|trolls|tools|all> [player] | /guns size <player|all> <tiny|small|normal|big|huge|giant|number> | /guns troll <player> <effect> | /guns undo [amount|all|player <name>] | /guns list | /guns reload", NamedTextColor.YELLOW));
+            sender.sendMessage(Component.text("/guns [menu] | /guns give <item|guns|nukes|trolls|tools|all> [player] | /guns size <player|all> <tiny|small|normal|big|huge|giant|number> | /guns troll <player> <effect> | /guns undo [amount|all|player <name>] | /guns list | /guns reload", NamedTextColor.YELLOW));
             return true;
         }
         switch (args[0].toLowerCase()) {
@@ -251,16 +332,13 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
                         done > 0 ? NamedTextColor.GREEN : NamedTextColor.YELLOW));
             }
             case "list" -> {
-                List<String> guns = new ArrayList<>();
-                for (GunType t : GunType.values()) guns.add(t.id());
-                List<String> tools = new ArrayList<>();
-                for (TrollTool t : TrollTool.values()) tools.add(t.id());
-                sender.sendMessage(Component.text("Guns: " + String.join(", ", guns), NamedTextColor.YELLOW));
-                sender.sendMessage(Component.text("Troll items: " + String.join(", ", tools), NamedTextColor.LIGHT_PURPLE));
-                List<String> utils = new ArrayList<>();
-                for (ToolType t : ToolType.values()) utils.add(t.id());
-                sender.sendMessage(Component.text("Tools: " + String.join(", ", utils), NamedTextColor.GOLD));
-                sender.sendMessage(Component.text("Troll commands: " + String.join(", ", TrollListener.COMMAND_TROLLS), NamedTextColor.AQUA));
+                listGroup(sender, "GUNS", NamedTextColor.GOLD, GunType.values(), t -> !t.nuke(), GunType::group, GunType::id);
+                listGroup(sender, "NUKES", NamedTextColor.RED, GunType.values(), GunType::nuke, GunType::group, GunType::id);
+                listGroup(sender, "TOOLS", NamedTextColor.GREEN, ToolType.values(), t -> true, ToolType::group, ToolType::id);
+                listGroup(sender, "TROLL ITEMS", NamedTextColor.LIGHT_PURPLE, TrollTool.values(), t -> true, TrollTool::group, TrollTool::id);
+                sender.sendMessage(Component.text("TROLL COMMANDS", NamedTextColor.AQUA, TextDecoration.BOLD));
+                sender.sendMessage(Component.text("  " + String.join(", ", TrollListener.COMMAND_TROLLS), NamedTextColor.GRAY));
+                sender.sendMessage(Component.text("Tip: /guns opens a menu with all of this.", NamedTextColor.DARK_GRAY));
             }
             case "troll" -> {
                 if (args.length < 3) {
@@ -349,7 +427,7 @@ public final class GHSGuns extends JavaPlugin implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> options = new ArrayList<>();
         if (args.length == 1) {
-            options.addAll(List.of("give", "troll", "size", "undo", "list", "reload"));
+            options.addAll(List.of("menu", "give", "troll", "size", "undo", "list", "reload"));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
             options.addAll(List.of("all", "guns", "nukes", "trolls", "tools"));
             for (ToolType t : ToolType.values()) options.add(t.id());

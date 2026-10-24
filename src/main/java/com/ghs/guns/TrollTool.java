@@ -70,6 +70,16 @@ public enum TrollTool {
         return description;
     }
 
+    /** Which section it's listed under in the menu. */
+    public String group() {
+        if (thrown || this == SHEEP_LAUNCHER) return "Throwables";
+        return switch (this) {
+            case SHRINK_RAY, SIZE_WAND -> "Size";
+            case YEET_STICK, LEVITATION_WAND, ROCKET_WAND, ORBIT_WAND, UFO_REMOTE, MAGNET, SWAP_STICK, FISH_SLAP -> "Movement Wands";
+            default -> "Chaos Wands";
+        };
+    }
+
     public String id() {
         return name().toLowerCase(Locale.ROOT);
     }

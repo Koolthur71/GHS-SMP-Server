@@ -4,6 +4,20 @@ Guns, nukes, sci-fi weapons, tools and a lot of trolls for the GHS SMP (Paper 26
 
 **Nothing in this plugin can kill a player.** Bullets, lasers, explosions, fire and fall damage after being launched all leave players at `min-health` (half a heart by default). Mobs can still die.
 
+## Menu
+Type **`/guns`** to open the **GHS Arsenal** chest menu (works on Java and Bedrock):
+- **Guns**, **Nukes**, **Tools** and **Troll Items**: each page is sorted into sections with colored headers (for example Classic Guns / Launchers / Sci-Fi Guns). Click an item to get it, or use **Give me all** at the bottom.
+- **Troll a Player**: click a player's head (or **Everyone Else**), then click an effect. Effects are sorted into Size (permanent), Physical and Pranks.
+- **Undo Last Explosion**: puts back the blocks from the most recent explosion.
+
+Every item's tooltip says what it is (GUN / NUKE / TOOL / TROLL and its group), what it does, its stats and its controls. Switching to an item also shows a quick hint above your hotbar.
+
+## Who can use it
+Everything is **ops only** by default:
+- `ghsguns.admin` (op): `/guns`, the menu, giving items, trolling players, sizes, undo.
+- `ghsguns.use` (op): actually using the guns, nukes, tools and troll items. If a non-op somehow gets an item, it does nothing.
+- With a permissions plugin like LuckPerms, you can give `ghsguns.use` to trusted players so they can use items without access to the menu. Don't give `ghsguns.*` to your default group.
+
 ## Guns
 Right-click to shoot (hold it for automatic guns). Sneak + right-click to reload. There's **no cooldown** by default (`gun-cooldowns: false`), and `infinite-ammo: true` turns off reloading.
 
@@ -96,13 +110,14 @@ The drills, tree feller and vein miner break blocks as if you mined them yoursel
 | **Orbit Wand** | Sends them spinning in orbit, then flings them |
 
 ## Commands (permission `ghsguns.admin`, op by default)
+- `/guns` or `/guns menu`: open the menu
 - `/guns give <item|guns|nukes|trolls|tools|all> [player]`
 - `/guns size <player|all> <tiny|small|normal|big|huge|giant|number>`: **permanent** size that stays through relogs and restarts. `normal` puts them back to regular size.
 - `/guns troll <player|all> <effect>`, with these effects:
   - **Physical:** `launch`, `anvil`, `chickens`, `freeze`, `levitate`, `disco`, `faketnt`, `shrink`, `giant`, `cage`, `skydrop`, `potato`, `pigrain`, `webs`, `lightning`, `bouncy`, `flashbang`, `stinkbomb`, `tornado`, `sheep`, `meteor`, `rocket`, `rainbow`, `pinata`, `creeperparty`, `ufo`, `orbit`, `hiccups`, `lowgravity`, `earthquake`, `blackhole`, `fireworks`, `explode`
   - **Mind games:** `fakeop`, `creeper`, `spin`, `fakenuke`, `fakeban`, `demo`, `drunk`, `uwu`, `jumpscare`, `paranoia`, `fakediamonds`, `fakeleave`, `fakedeath`, `shuffle`, `fakeadvancement`, `slowmo`, `zoomies`, `screenshake`, `chickenhat`, `cakerain`
 - `/guns undo [amount|all|player <name>]`: put back blocks broken by explosions
-- `/guns list`, `/guns reload`
+- `/guns list` (everything, sorted into groups), `/guns reload`
 
 Undo covers whole nukes (rings, bomblets and black holes included) as one step. History is kept in memory only (the last 50 explosions), so it clears on restart. Blocks placed by trolls and tools (cages, webs, snow, sky walker glass) only go into empty space (or over water and lava for the sky walker), remove themselves and are cleaned up if the server stops.
 

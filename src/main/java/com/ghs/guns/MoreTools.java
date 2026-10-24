@@ -119,7 +119,7 @@ public final class MoreTools implements Listener {
                 return;
             }
         }
-        if (!player.hasPermission("ghsguns.use")) return;
+        if (!plugin.canUse(player)) return;
         Block clicked = event.getClickedBlock();
         BlockFace face = event.getBlockFace();
         switch (tool) {
@@ -150,9 +150,11 @@ public final class MoreTools implements Listener {
         if (tool == null) return;
         if (tool == ToolType.MOB_CATCHER) {
             event.setCancelled(true);
+            if (!plugin.canUse(player)) return;
             if (event.getRightClicked() instanceof LivingEntity le) capture(player, le);
         } else if (tool == ToolType.HEALING_STAFF) {
             event.setCancelled(true);
+            if (!plugin.canUse(player)) return;
             if (event.getRightClicked() instanceof LivingEntity le) healTarget(player, le);
         }
     }
@@ -167,7 +169,7 @@ public final class MoreTools implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onDrops(BlockDropItemEvent event) {
-        if (plugin.toolType(event.getPlayer().getInventory().getItemInMainHand()) != ToolType.SMELTER_PICK) return;
+        if (plugin.toolType(event.getPlayer().getInventory().getItemInMainHand()) != ToolType.SMELTER_PICK || !plugin.canUse(event.getPlayer())) return;
         boolean any = false;
         for (Item item : event.getItems()) {
             ItemStack stack = item.getItemStack();
@@ -397,6 +399,7 @@ public final class MoreTools implements Listener {
         int tick = Bukkit.getCurrentTick();
         for (Player p : Bukkit.getOnlinePlayers()) {
             ToolType tool = held(p);
+            if (tool == null || !plugin.canUse(p)) continue;
             if (tool == ToolType.ITEM_MAGNET) magnet(p, tick);
             else if (tool == ToolType.SKY_WALKER) skyWalk(p, tick);
         }

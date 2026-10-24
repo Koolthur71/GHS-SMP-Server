@@ -78,12 +78,13 @@ public final class GunListener implements Listener {
         // Sniper: left-click toggles the scope
         if (type == GunType.SNIPER && (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK)) {
             event.setCancelled(true);
+            if (!plugin.canUse(player)) return;
             toggleScope(player);
             return;
         }
         if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
         event.setCancelled(true);
-        if (!player.hasPermission("ghsguns.use")) return;
+        if (!plugin.canUse(player)) return;
         if (reloading.contains(player.getUniqueId())) return;
 
         if (player.isSneaking()) {

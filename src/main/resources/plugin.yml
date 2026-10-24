@@ -2,16 +2,22 @@ name: GHSGuns
 version: '${project.version}'
 main: com.ghs.guns.GHSGuns
 api-version: '26.3'
-description: Troll guns, RPGs and nukes that work for Java and Bedrock (Geyser) players.
+description: Guns, nukes, tools and trolls that work for Java and Bedrock (Geyser) players.
 commands:
   guns:
-    description: Give guns or reload the config
-    usage: /guns <give|undo|list|reload>
+    description: Open the GHS Arsenal menu, or give items, troll players, change sizes and undo explosions
+    usage: /guns [menu|give|troll|size|undo|list|reload]
     permission: ghsguns.admin
 permissions:
   ghsguns.admin:
-    description: Use /guns
+    description: Use /guns and the menu (give items, troll players, undo)
     default: op
   ghsguns.use:
-    description: Fire guns
-    default: true
+    description: Use guns, nukes, tools and troll items. Without it, the items do nothing.
+    default: op
+  ghsguns.*:
+    description: Everything
+    default: op
+    children:
+      ghsguns.admin: true
+      ghsguns.use: true
