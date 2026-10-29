@@ -90,10 +90,11 @@ const V=+(new URLSearchParams(location.search).get('v')||1);
 const DATA={
  1:{q:'A nation reveals itself not only by the men it produces but also by the men it honors, the men it remembers.',n:'John F. Kennedy',r:'35th President of the United States',theme:'navy'},
  2:{q:'This nation will remain the land of the free only so long as it is the home of the brave.',n:'Elmer Davis',r:'American journalist & broadcaster',theme:'red'},
- 3:{q:'To care for him who shall have borne the battle, and for his widow, and his orphan.',n:'Abraham Lincoln',r:'16th President of the United States',theme:'peri'},
+ 3:{q:'Let us solemnly remember the sacrifices of all those who fought so valiantly\u2026 to preserve our heritage of freedom.',n:'Dwight D. Eisenhower',r:'Veterans Day Proclamation, 1954',theme:'peri',fs:48},
  4:{q:'A hero is someone who has given his or her life to something bigger than oneself.',n:'Joseph Campbell',r:'American writer',theme:'bunting'},
 }[V];
 document.getElementById('quote').textContent=DATA.q;
+if(DATA.fs) document.getElementById('quote').style.fontSize=DATA.fs+'px';
 document.getElementById('name').textContent=DATA.n;
 document.getElementById('role').textContent=DATA.r;
 
