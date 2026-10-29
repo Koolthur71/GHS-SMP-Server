@@ -236,13 +236,13 @@ const icon=(kind,num)=>{
     el('circle',{r:6,fill:'#B3193F',stroke:'none'},g);
   }
   if(kind==='thaw'){
-    const fr=el('g',{transform:'translate(-9,2)'},g);
+    const fr=g;
     el('rect',{x:-24,y:-38,width:48,height:76,rx:9,fill:'#FFFFFF'},fr);
     el('line',{x1:-24,y1:-10,x2:24,y2:-10},fr);
     el('line',{x1:-14,y1:-28,x2:-14,y2:-18,stroke:'#B3193F'},fr);
     el('line',{x1:-14,y1:2,x2:-14,y2:20,stroke:'#B3193F'},fr);
     // moon = overnight, kept fully inside the circle
-    el('path',{d:'M30 -38 a12 12 0 1 0 11 17 a9 9 0 1 1 -11 -17 z',fill:'#E3C77E',stroke:'#1C2B55','stroke-width':3},s);
+    el('path',{d:'M38 -36 a10 10 0 1 0 9 14 a7.5 7.5 0 1 1 -9 -14 z',fill:'#E3C77E',stroke:'#1C2B55','stroke-width':3},s);
   }
   // number badge
   el('circle',{cx:-46,cy:-44,r:20,fill:'#B3193F',stroke:'#FBF6EC','stroke-width':4},s);
