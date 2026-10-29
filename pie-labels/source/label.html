@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..900,0..100;1,9..144,400..900,0..100&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..900,0..100;1,9..144,400..900,0..100&display=swap" rel="stylesheet">
 <style>
   :root {
     --navy:#1C2B55; --navy2:#26386B; --red:#B3193F; --red2:#8E1430; --cream:#FBF6EC; --paper:#F7F0E1;
@@ -17,8 +17,8 @@
   #left { left:0; top:0; width:790px; height:1200px; }
   #leftContent { position:absolute; left:80px; width:630px; display:flex; flex-direction:column; align-items:center; text-align:center; }
   .eyebrow { font-size:46px; letter-spacing:7px; }
-  .qmark { font-family:'Fraunces'; font-weight:900; font-size:190px; line-height:.55; height:78px; margin-top:58px; margin-bottom:6px; }
-  .quote { font-style:italic; font-weight:600; font-size:57px; line-height:1.24; font-variation-settings:'SOFT' 100, 'opsz' 72; }
+  .qmark { font-family:'DM Serif Display'; font-weight:400; font-size:200px; line-height:.55; height:78px; margin-top:58px; margin-bottom:6px; }
+  .quote { font-family:'DM Serif Display',serif; font-style:normal; font-weight:400; font-size:60px; line-height:1.2; letter-spacing:.3px; }
   .attr { margin-top:30px; display:flex; flex-direction:column; align-items:center; gap:2px; }
   .attr .rule { display:flex; align-items:center; gap:16px; }
   .attr .rule i { display:block; width:70px; height:4px; border-radius:2px; }
@@ -37,7 +37,7 @@
   .step h3 { font-family:'Bebas Neue'; font-weight:400; font-size:54px; letter-spacing:3px; color:var(--navy); line-height:1; }
   .step p { font-weight:600; font-size:33px; line-height:1.25; color:var(--slate); margin-top:4px; }
   .step p em { font-style:italic; font-weight:500; opacity:.85; }
-  .pill { margin-top:auto; background:var(--red); color:var(--cream); border-radius:20px; height:96px; display:flex; align-items:center; justify-content:center; gap:20px; font-size:40px; letter-spacing:1.5px; white-space:nowrap; gap:14px; box-shadow: 0 6px 0 var(--red2); }
+  .pill { margin-top:auto; background:var(--red); color:var(--cream); border-radius:20px; height:96px; display:flex; align-items:center; justify-content:center; gap:20px; font-size:33px; letter-spacing:1.5px; white-space:nowrap; gap:16px; box-shadow: 0 6px 0 var(--red2); }
 </style>
 </head>
 <body>
@@ -121,7 +121,6 @@ let contentTop=70, contentBottom=860;
 if(DATA.theme==='navy'){
   el('ellipse',{cx:400,cy:520,rx:420,ry:520,fill:'#2E4482',opacity:.55,filter:'url(#soft)'},L);
   seed=5;
-  for(let i=0;i<70;i++){const x=rnd()*W,y=rnd()*1200,r=4+rnd()*12;star(x,y,r,'#FBF6EC',L,{opacity:(0.06+rnd()*0.16).toFixed(2),rot:rnd()});}
 }
 if(DATA.theme==='red'){
   el('ellipse',{cx:400,cy:500,rx:420,ry:520,fill:'#B8264A',opacity:.6,filter:'url(#soft)'},L);
@@ -159,7 +158,6 @@ if(DATA.theme==='bunting'){
   el('circle',{cx,cy:cy+2,r:30,fill:'#C9A34E'},g);
   // faint star scatter lower
   seed=21;
-  for(let i=0;i<30;i++){const x=rnd()*W,y=320+rnd()*880,r=4+rnd()*9;star(x,y,r,'#FBF6EC',L,{opacity:(0.05+rnd()*0.12).toFixed(2),rot:rnd()});}
   contentTop=215;
 }
 
@@ -214,9 +212,18 @@ const icon=(kind,num)=>{
     el('line',{x1:-24,y1:12,x2:10,y2:12,stroke:'#FBF6EC','stroke-width':4},g);
   }
   if(kind==='foil'){
-    el('path',{d:'M-34 -22 L-12 -30 L4 -24 L28 -32 L34 -6 L28 16 L32 28 L4 24 L-14 30 L-34 22 L-30 0 Z',fill:'#E4E8F0'},g);
-    el('path',{d:'M-12 -30 L-6 -2 L-30 0 M-6 -2 L4 24 M-6 -2 L28 16 M4 -24 L-6 -2 M28 -32 L14 -4 L34 -6',stroke:'#8A93AC','stroke-width':3},g);
-    el('path',{d:'M-20 -14 L-12 -16',stroke:'#FFFFFF','stroke-width':5},g);
+    // roll of foil with a sheet pulled down
+    const dd=el('defs',{},s);
+    const lg=(id,stops,x2,y2)=>{const gr=el('linearGradient',{id,x1:0,y1:0,x2,y2},dd);stops.forEach(([o,c])=>el('stop',{offset:o,'stop-color':c},gr));};
+    lg('foilSheet',[[0,'#FFFFFF'],[.45,'#DDE2EC'],[.55,'#F5F7FB'],[1,'#B9C1D3']],1,1);
+    lg('foilRoll',[[0,'#F7F9FC'],[.5,'#C9CFDC'],[1,'#9AA3B8']],0,1);
+    let zz='M-28 -8 L28 -8 L28 24'; for(let k=0;k<8;k++) zz+=` l-3.5 ${k%2?-5:5}`; zz+=' L-28 24 Z';
+    zz='M-28 -8 L28 -8 L28 22'; for(let k=0;k<14;k++) zz+=` L${(28-4*(k+1)).toFixed(1)} ${k%2?22:28}`; zz+=' L-28 22 Z';
+    el('path',{d:zz,fill:'url(#foilSheet)'},g);
+    el('path',{d:'M-14 4 L-2 16 M4 0 L18 14',stroke:'#FFFFFF','stroke-width':3.5,opacity:.95},g);
+    el('rect',{x:-38,y:-32,width:76,height:26,rx:13,fill:'url(#foilRoll)'},g);
+    el('line',{x1:-24,y1:-26,x2:20,y2:-26,stroke:'#FFFFFF','stroke-width':3.5},g);
+    el('ellipse',{cx:31,cy:-19,rx:5,ry:8,fill:'#FBF6EC','stroke-width':3},g);
   }
   if(kind==='freeze'){
     for(let k=0;k<6;k++){
