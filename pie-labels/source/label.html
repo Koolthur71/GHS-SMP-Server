@@ -18,7 +18,7 @@
   #leftContent { position:absolute; left:80px; width:630px; display:flex; flex-direction:column; align-items:center; text-align:center; }
   .eyebrow { font-size:46px; letter-spacing:7px; }
   .qmark { font-family:'DM Serif Display'; font-weight:400; font-size:200px; line-height:.55; height:78px; margin-top:58px; margin-bottom:6px; }
-  .quote { font-family:'DM Serif Display',serif; font-style:normal; font-weight:400; font-size:60px; line-height:1.2; letter-spacing:.3px; }
+  .quote { margin-top:40px; font-family:'DM Serif Display',serif; font-style:normal; font-weight:400; font-size:60px; line-height:1.2; letter-spacing:.3px; }
   .attr { margin-top:30px; display:flex; flex-direction:column; align-items:center; gap:2px; }
   .attr .rule { display:flex; align-items:center; gap:16px; }
   .attr .rule i { display:block; width:70px; height:4px; border-radius:2px; }
@@ -60,7 +60,6 @@
 
 <div id="left" class="abs"><div id="leftContent">
   <div class="eyebrow bebas" id="eyebrow">★ &nbsp;Thank You, Veterans&nbsp; ★</div>
-  <div class="qmark" id="qmark">&ldquo;</div>
   <div class="quote" id="quote"></div>
   <div class="attr">
     <div class="rule"><i></i><span class="name bebas" id="name"></span><i></i></div>
@@ -93,7 +92,7 @@ const DATA={
  3:{q:'Let us solemnly remember the sacrifices of all those who fought so valiantly\u2026 to preserve our heritage of freedom.',n:'Dwight D. Eisenhower',r:'Veterans Day Proclamation, 1954',theme:'peri',fs:48},
  4:{q:'A hero is someone who has given his or her life to something bigger than oneself.',n:'Joseph Campbell',r:'American writer',theme:'bunting'},
 }[V];
-document.getElementById('quote').textContent=DATA.q;
+document.getElementById('quote').textContent='\u201C'+DATA.q+'\u201D';
 if(DATA.fs) document.getElementById('quote').style.fontSize=DATA.fs+'px';
 document.getElementById('name').textContent=DATA.n;
 document.getElementById('role').textContent=DATA.r;
@@ -106,7 +105,7 @@ const T={
 }[DATA.theme];
 
 const css=(id,o)=>Object.assign(document.getElementById(id).style,o);
-css('eyebrow',{color:T.eyebrow}); css('qmark',{color:T.qmark}); css('quote',{color:T.text});
+css('eyebrow',{color:T.eyebrow}); css('quote',{color:T.text});
 css('name',{color:T.name}); css('role',{color:T.text});
 document.querySelectorAll('.attr .rule i').forEach(i=>i.style.background=T.rule);
 
@@ -138,7 +137,7 @@ if(DATA.theme==='peri'){
   el('rect',{x:-100,y:-60,width:440,height:330,fill:'#34478F',opacity:.9},fl);
   seed=9;
   for(let r=0;r<4;r++) for(let c=0;c<5;c++) star(-40+c*80+(r%2)*40,10+r*58,17,'#FBF6EC',fl,{opacity:.95});
-  contentTop=250;
+  contentTop=350;
 }
 if(DATA.theme==='bunting'){
   // fan bunting hanging from top
